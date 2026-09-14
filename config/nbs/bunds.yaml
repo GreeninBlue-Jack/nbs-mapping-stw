@@ -1,0 +1,24 @@
+# Bunds / Catchment Storage Areas opportunity layer parameters
+# Ports OppMapp_BundsCatchmentStorageAreas_v2.R
+
+flood_dataset: "Risk of Flooding from Surface Water — Extent >=1% (NaFRA2)"
+raf_dataset: "WWNP Runoff Attenuation Features 1% AEP"
+waterlines_dataset: "OS Open Zoomstack — Waterlines"
+
+# Type-keyed waterline buffer distances (metres)
+# Matches buffer_key data.frame in R script lines 41-47
+waterline_buffers:
+  District: 50
+  Local: 30
+  National: 150
+  Regional: 100
+
+# NaFRA2 1-in-100 yr extent (risk_band High+Medium) — matches R model.
+# See docs/methodology/07_flood_and_waterbody_sources.md.
+
+# Minimum polygon area (m2) for the dissolved bunds opportunity output (Brief 13).
+# Differencing the flood extent against RAF / waterline buffers / constraints shatters it
+# into ~623k polygons, ~64% of them sub-16 m2 vector-difference slivers (<2% of the area)
+# that the R 4 m raster model could never produce. A 20 m2 floor drops those degenerate
+# artifacts while preserving genuinely small features. Set 0 to disable.
+min_area_m2: 20

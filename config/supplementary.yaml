@@ -1,0 +1,63 @@
+# Supplementary attribute joins (Brief 17 A4) — the editable, ordered list of layers
+# joined onto every opportunity feature to add attributes for scoring / labelling.
+#
+# add_supplementary (src/pipeline/supplementary.py) iterates this list. Each layer is
+# loaded ONCE per AOI (prepare_supplementary_context, memoised), then its attribute(s)
+# are joined onto each NbS layer's opportunity features by representative-point spatial
+# join (the supplementary polygon that contains each feature's point-on-surface).
+#
+# To ADD a supplementary layer:  add a registry dataset (src/datasets.py) + a row here
+#                                (+ a config/prioritisation_scores.yaml block if it is scored).
+# To REMOVE one:                 delete its row here (+ its scores block).
+# Either way: NO Python change needed.
+#
+# Fields per join:
+#   dataset       Registry dataset name (src/datasets.py 'name').                 [required]
+#   rename        {source_column: OUT_COLUMN}  exact, case-insensitive. A missing source
+#                 still yields the OUT_COLUMN (filled null) — so label-only gaps are fine.
+#   column_match  {substring: OUT_COLUMN}  fuzzy — the first column whose name equals or
+#                 contains the substring (case-insensitive). Use when the source column
+#                 name varies between access routes.
+#   make_valid    false (default) | true (make_valid all geometries) | structure (fast
+#                 GEOS make_valid on INVALID geometries only — for high-vertex layers).
+#   on_fail       warn (default: null the OUT_COLUMNs and carry on) | raise (surface loudly).
+#   report        true -> after the join, log the populate rate + value breakdown (HML).
+
+joins:
+  # 1. WFD Water Bodies -> WB_ID, WB_NAME (label). The live WFS is lowercase; the dev
+  #    R-reference shp is uppercase — rename is case-insensitive so both resolve. OPCAT is
+  #    absent from the live WFS (label only, unscored) and simply stays null.
+  - dataset: "WFD River Waterbody Catchments Cycle 2 (England)"
+    rename: {wb_id: WB_ID, wb_name: WB_NAME}
+
+  # 2. CEH Land Cover Map 2023 -> CEH_LU (numeric class code; relabelled to authoritative
+  #    text on the final prioritised output — see prioritisation.py).
+  - dataset: "CEH Land Cover Map 2023 Polygon"
+    rename: {mode: CEH_LU}
+
+  # 3. ALC grade -> alc_grade (agricultural land classification; higher grade lowers score).
+  - dataset: "Agricultural Land Classification (ALC)"
+    rename: {alc_grade: alc_grade}
+
+  # 4. BGS Soil Parent Material -> sl_grp, sl_tex, sl_dep (any absent column stays null).
+  - dataset: "Soil Parent Material Model (1 km generalised)"
+    rename: {SOIL_GROUP: sl_grp, SOIL_TEX: sl_tex, SOIL_DEPTH: sl_dep}
+
+  # 5. HML Recharge Prioritisation -> rch_pt (HIGH/MEDIUM/LOW). Covers only part of any
+  #    AOI, so nulls are expected — but a genuine failure (missing column / empty layer /
+  #    no intersection) MUST surface (on_fail: raise), never a silent null.
+  - dataset: "Recharge Prioritisation (HML)"
+    column_match: {prioriti: rch_pt}
+    make_valid: true
+    on_fail: raise
+    report: true
+
+  # 6. Priority Habitat Networks -> prio_hb (habitat class; presence raises priority).
+  - dataset: "Priority Habitat Area (Habitat Networks)"
+    column_match: {class: prio_hb}
+
+  # 7. England Woodland Creation Sensitivity -> wood_s (label). A few polygons carry ~750k
+  #    vertices, so make_valid: structure fixes only the invalid ones fast (Brief 16/17).
+  - dataset: "England Woodland Creation Sensitivity"
+    column_match: {sensit: wood_s}
+    make_valid: structure

@@ -1,0 +1,16 @@
+# Woodland Planting opportunity layer parameters
+# Ports OppMapp_WoodlandTreePlanting.R
+
+wider_woodland_dataset: "WWNP Wider Catchment Woodland Potential"
+woodland_sensitivity_dataset: "England Woodland Creation Sensitivity"
+woodland_constraint_dataset: "WWNP Woodland Constraints"
+
+# R-faithful approach: high-sensitivity woodland creation areas ARE INCLUDED in
+# the opportunity set (merged with wider woodland potential before constraint removal).
+# NOTE (2026-07-03 review, M3): sensitivity is currently LABEL-ONLY — wood_s is
+# joined but wood_prio is excluded from tot_prio (config/prioritisation.yaml), so
+# High-sensitivity areas are NOT down-weighted in scoring. This matches R. Revisit
+# if a woodland-specific weighting is requested.
+# See docs/methodology/06_pipeline_architecture.md for explanation.
+sensitivity_include_values:
+  - "High"

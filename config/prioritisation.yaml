@@ -1,0 +1,44 @@
+# Prioritisation configuration
+# Ports the prio_score block of OppMapp_extractSupplementary_v2.R
+# with a deliberate five-key extension (R used four keys).
+# See docs/methodology/06_pipeline_architecture.md for the full rationale.
+
+# --- Active join keys ---
+# Keys whose lookup sheet is read from Priority_Scores.xlsx
+xlsx_join_keys:
+  - CEH_LU      # -> lu_prio
+  - alc_grade   # -> alc_prio
+  - prio_hb     # -> hb_prio   (NaN mapped to 0.5 per R)
+  - sl_grp      # -> sl_prio
+
+xlsx_prio_names:
+  - lu_prio
+  - alc_prio
+  - hb_prio
+  - sl_prio
+
+# --- HML Recharge Prioritisation lookup ---
+# The Priority_Scores.xlsx rch_pt sheet contains old EA CUMULATIVE codes (2-5).
+# HML uses HIGH/MEDIUM/LOW at waterbody scale — mapped via this config lookup.
+# Do NOT label this "infiltration"; it is a groundwater recharge signal.
+hml_recharge_lookup:
+  HIGH:   1.0
+  MEDIUM: 0.5
+  LOW:    0.0
+  default: 0.0   # Missing / NA rch_pt -> 0.0
+
+# --- Combination method ---
+combine_method: mean   # row-wise mean of all five sub-scores
+
+# --- Excluded keys and rationale ---
+excluded_keys:
+  wb_prio: >
+    All Warwickshire Avon WBs score 0 in the xlsx except Upper Avon / Leam-specific
+    waterbodies. No STW-wide waterbody priority table has been provided. Excluded
+    until STW supplies a catchment-wide priority lookup.
+  wood_prio: >
+    Woodland creation sensitivity applied uniformly across all NbS types would
+    bias scoring against layers with no woodland component. Excluded from the
+    shared tot_prio; revisit if a woodland-layer-specific weighting is requested.
+    Consequence (2026-07-03, M3): wood_s is a label-only attribute — High-
+    sensitivity woodland areas are NOT down-weighted anywhere, matching R.

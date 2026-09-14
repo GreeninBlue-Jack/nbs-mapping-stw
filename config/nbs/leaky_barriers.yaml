@@ -1,0 +1,14 @@
+# Leaky Barriers opportunity layer parameters
+# Ports OppMapp_LeakyBarriers_v2.R
+
+flood_dataset: "Risk of Flooding from Surface Water — Extent >=1% (NaFRA2)"
+woodland_constraint_dataset: "WWNP Woodland Constraints"
+raf_dataset: "WWNP Runoff Attenuation Features 1% AEP"
+
+# Fluvial-floodplain exclusion (Brief 23): drop candidate points that fall within the EA
+# Flood Map for Planning Flood Zone 3 (1-in-100 fluvial floodplain) — keeps leaky barriers
+# in HEADWATERS, off the main-Trent/main-river floodplains. Comment this line out to disable.
+fluvial_floodplain_dataset: "Flood Map for Planning — Flood Zone 3 (fluvial floodplain)"
+
+# NaFRA2 1-in-100 yr extent (risk_band High+Medium) — matches the R model's RoFSW_Extent_1in100.
+# Replaces the legacy 0.1% (1-in-1000) ArcGIS entry. See docs/methodology/07_flood_and_waterbody_sources.md.

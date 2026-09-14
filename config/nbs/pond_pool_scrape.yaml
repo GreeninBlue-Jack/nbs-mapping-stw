@@ -1,0 +1,5 @@
+# Pond / Pool / Scrape opportunity layer parameters
+# Ports OppMapp_PondPoolScrape.R
+
+opportunity_dataset: "WWNP Runoff Attenuation Features 1% AEP"
+min_area_m2: 0  # R script applies no minimum area filter; 0 = no filter

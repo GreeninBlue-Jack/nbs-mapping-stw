@@ -1,0 +1,5 @@
+# Riparian Buffer Strips opportunity layer parameters
+# Ports OppMapp_RiparianBufferStrips.R
+
+riparian_dataset: "WWNP Riparian Woodland Potential"
+# No parity reference outputs exist in the R model folder for this layer.

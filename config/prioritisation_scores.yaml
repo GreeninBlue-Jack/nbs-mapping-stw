@@ -1,0 +1,122 @@
+# Editable prioritisation score tables (Brief 13 A5).
+#
+# Relocated verbatim from the READ-ONLY reference workbook
+#   data/reference/R_Model/Prioritisation_Lookup/Priority_Scores.xlsx
+# which is kept as provenance only and must not be edited.
+# EDIT THE VALUES HERE to re-weight prioritisation; changes take effect on the
+# next `python scripts/run_pipeline.py` run (no xlsx edit, no code change).
+#
+# Each sub-score is in [0, 1]. tot_prio = row-wise mean of the five active
+# sub-scores: lu_prio (CEH_LU), alc_prio (alc_grade), hb_prio (prio_hb),
+# sl_prio (sl_grp), rch_prio (HML recharge - see config/prioritisation.yaml).
+# wb_prio and wood_prio are deliberately excluded (see prioritisation.yaml).
+# See docs/methodology/06_pipeline_architecture.md 'Prioritisation method'.
+
+# --- CEH_LU -> lu_prio (baseline land-use signal) ----------------------------
+# CEH_LU is the numeric UKCEH Land Cover Map class code. It is kept NUMERIC
+# through scoring (lu_prio joins on the code); the final prioritised output
+# relabels CEH_LU to the text label below. Labels are the xlsx CEH_Class column.
+ceh_lu:
+  labels:
+    1: "Deciduous woodland"
+    2: "Coniferous woodland"
+    3: "Arable"
+    4: "Improved grassland"
+    5: "Neutral Grassland"
+    6: "Calcareous grassland"   # spelling fixed 2026-07-03 (was 'Calcerous' in the xlsx)
+    7: "Acid grassland"
+    8: "Fen"
+    9: "Heather"
+    10: "Heather grassland"
+    11: "Bog"
+    12: "Inland rock"
+    13: "Saltwater"
+    14: "Freshwater"
+    15: "Supralittoral rock"
+    16: "Supralittoral sediment"
+    17: "Littoral rock"
+    18: "Littoral sediment"
+    19: "Saltmarsh"
+    20: "Urban"
+    21: "Suburban"
+  lu_prio:
+    1: 0
+    2: 0
+    3: 1
+    4: 1
+    5: 0.5
+    6: 0.5
+    7: 0.5
+    8: 0
+    9: 0.5
+    10: 0.5
+    11: 0
+    12: 1
+    13: 1
+    14: 1
+    15: 1
+    16: 1
+    17: 1
+    18: 1
+    19: 0
+    20: 0
+    21: 0
+
+# --- alc_grade -> alc_prio (agricultural land classification) -----------------
+# Brief 22 (2026-07-28): the registry ALC is now the PROVISIONAL ALC
+# (national), which uses single 'Grade 1'-'Grade 5' — NO 3a/3b subdivision. Reverted
+# to single-Grade keys, matching R (which used the Provisional product). The Post-1988
+# 'Grade 3a'/'Grade 3b' keys were removed (that product is no longer used — it was a
+# sparse patchwork leaving alc_grade null across most of STW; review C2).
+# 'Urban'/'Non Agricultural' carry no grade signal -> scored 0. Any value present in the
+# data but absent here stays NaN (excluded from the skipna tot_prio mean) and is reported
+# loudly at runtime with counts — should now be ~0 given national single-Grade coverage.
+alc_grade:
+  "Grade 1": 0
+  "Grade 2": 0.2
+  "Grade 3": 0.75
+  "Grade 4": 1
+  "Grade 5": 1
+  "Urban": 0
+  "Non Agricultural": 0
+
+# --- prio_hb -> hb_prio (priority-habitat network signal) ---------------------
+prio_hb:
+  na_value: 0.5   # features with no habitat-network class (xlsx prio_hb NaN row)
+  scores:
+    "Network Enhancement Zone 1": 1
+    "PHI_Other": 0
+    "SSSI": 0
+    "Network Enhancement Zone 2": 1
+    "Ancient woodland": 0
+    "Network Expansion Zone": 1
+    "Restorable Habitat": 0.5
+    "Wood pasture and parkland": 0.5
+    "Fragmentation Action Zone": 1
+    "Traditional orchard": 0
+    "Habitat Restoration-Creation": 1
+    "Rivers": 1
+    "Lowland meadows": 0
+    "Lowland fens": 0
+    "Lowland dry acid grassland": 0
+    "Lowland calcareous grassland": 0
+    "Purple moor grass & rush pastures": 0
+    "Lowland heathland": 0
+    "Reedbeds": 0
+    "Lakes": 0
+
+# --- sl_grp -> sl_prio (BGS soil-group infiltration proxy) --------------------
+sl_grp:
+  "ALL": 0.5
+  "HEAVY TO MEDIUM": 1
+  "MEDIUM TO HEAVY": 1
+  "MEDIUM TO LIGHT(SILTY) TO HEAVY": 0.5
+  "MEDIUM(SILTY) TO LIGHT(SILTY)": 0.5
+  "LIGHT(SANDY) TO MEDIUM(SANDY)": 0.5
+  "MEDIUM TO LIGHT(SILTY)": 0.5
+  "LIGHT TO MEDIUM": 0.5
+  "LIGHT(SILTY) TO MEDIUM(SILTY)": 0.5
+  "LIGHT(SANDY)": 0.5
+  "MEDIUM(SILTY) TO LIGHT(SILTY) TO HEAVY": 0.5
+  "MEDIUM": 0.75
+  "MEDIUM TO LIGHT": 0.5

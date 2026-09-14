@@ -1,0 +1,14 @@
+# Generic constraints layer parameters
+# Matches constraintsLayer_v2.R + ConstraintsLayers_prep.R
+
+roads_buffer_m: 10   # OS Zoomstack roads (local + regional + national) buffered 10 m
+rail_buffer_m: 20    # OS Zoomstack rail buffered 20 m
+# Surface water polygons: no buffer — used dissolved as-is
+# CEH LCM: filter mode in (20, 21, 11, 1) — see derived_uses in registry
+
+# Source Protection Zones — filter to R's No_Infiltration_Zone (SPZ1/1c/2) on the `number`
+# field (Brief 21). The live merged SPZ product also carries '3' (SPZ3 total source catchment)
+# and '2c', which R did NOT exclude; including them wrongly removed large legitimate-opportunity
+# areas over principal-aquifer catchments (North Notts Sherwood Sandstone). Matches
+# data/reference/R_Model/Constraints_Data/No_Infiltration_Zone.shp (number values 1, 1c, 2).
+spz_include_zones: ['1', '1c', '2']

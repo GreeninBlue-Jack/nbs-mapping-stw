@@ -1,0 +1,12 @@
+# Peat Restoration opportunity layer parameters
+# Implements docs/methodology/03_peat_restoration_experimental.md (erosion-only screening).
+# NOT a port of an R script — this NbS type is new to the Python pipeline.
+#
+# EROSION/DRAINAGE method (Brief 19, Jack 2026-07-11, after GIS inspection): opportunity =
+# buffered Upland Grips + Upland Gullies -> dissolve -> subtract constraints -> clip.
+# The earlier vegetation/bare-peat/haggs/depth approach was dropped (dry veg lit up the whole
+# Peak District; bare peat = shadowed/burnt Calluna false positives; haggs too fragmented).
+
+grips_dataset: "England Peat Map — Upland Grips"      # artificial drainage ditches
+gullies_dataset: "England Peat Map — Upland Gullies"  # peat erosion channels
+peat_buffer_m: 10   # buffer applied to grip/gully polygons before dissolve (restoration corridor)

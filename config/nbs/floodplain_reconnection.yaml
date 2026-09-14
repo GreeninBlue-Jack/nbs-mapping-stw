@@ -1,0 +1,6 @@
+# Floodplain Reconnection opportunity layer parameters
+# Ports OppMapp_FloodplainReconnectionRestoration.R
+
+# Both datasets are unioned (terra::merge in R = union in Python)
+reconnection_dataset: "WWNP Floodplain Reconnection Potential"
+woodland_dataset: "WWNP Floodplain Woodland Potential"
