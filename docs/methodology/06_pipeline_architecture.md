@@ -380,23 +380,32 @@ keep using `unary_union`.
 
 ## Running the pipeline
 
-**Prerequisites:**
-1. Run `scripts/fetch_and_cache_remote_datasets.py --aoi data/processed/stw_full_aoi.gpkg`
-   (or specify a dev-AOI GPKG) to populate `data/processed/raw_clipped/`.
-2. For peat restoration: run `scripts/preprocess_peat_depth.py --aoi <aoi_path>`.
-3. For leaky barriers / bunds: run `scripts/preprocess_waterlines_points.py` and
-   `scripts/preprocess_waterlines_buffered.py`.
+> **Updated 2026-09-15.** This section previously listed manual prerequisites for the monolithic
+> `run_pipeline.py` route, including a peat-depth preprocess that the delivered peat method no
+> longer uses. The delivered route is below.
 
-**Parity/dev run (Warwickshire Avon AOI):**
+**Any area, including the full STW area (the delivered route):**
+```bash
+python scripts/run_area.py --boundary <area>.gpkg --name <area>
+```
+It builds the water-body-union AOI and tile index, builds the waterlines inputs for leaky barriers
+and bunds, runs the tiled fetch + compute, and merges the tiles. Its only prerequisites are the
+datasets staged by hand (`docs/DATA_ACQUISITION.md`); full instructions are in
+`docs/RUN_GUIDE.md`. Peat restoration needs nothing extra — the grip/gully method uses no depth
+data, so `scripts/preprocess_peat_depth.py` is not part of the delivered pipeline.
+
+**Parity/dev run (Warwickshire Avon AOI)** — the monolithic path, kept for R-parity checks. The
+dev AOI and the R reference outputs live under `data/reference/`, which is not in the repository.
+This path does not build its own inputs, so first run `scripts/fetch_and_cache_remote_datasets.py`
+and the two waterlines scripts (`scripts/preprocess_waterlines_points.py`,
+`scripts/preprocess_waterlines_buffered.py`), each with `--aoi` pointing at the dev AOI.
 ```bash
 python scripts/run_pipeline.py --nbs pond_pool_scrape --aoi dev
 python scripts/run_pipeline.py --all --aoi dev
 ```
 
-**Full STW area (only after dev review passes):**
-```bash
-python scripts/run_pipeline.py --all --aoi full
-```
+`run_pipeline.py --aoi full` still exists but is superseded: the full area is not feasible in one
+pass, which is why the tiled runner was built (doc 08 §3).
 
 ---
 

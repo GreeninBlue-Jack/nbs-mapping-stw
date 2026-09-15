@@ -20,17 +20,37 @@ two win. Every figure below was re-derived from the delivered GeoPackages on 202
 
 The canonical full AOI is the **union of every WFD River Waterbody Catchment (Cycle 2, England)
 with positive-area overlap of the STW operational boundary**, included whole and unclipped
-(doc 09). Water bodies are never partially analysed.
+(doc 09). Water bodies are never partially analysed. The delivered AOI covered **25,508.2 km²**,
+computed as **747** water-body tiles.
 
-| Item | Value |
-|---|---|
-| Full AOI | `data/processed/stw_full_aoi.gpkg` — **25,508.2 km²** |
-| Bare operational boundary | `data/processed/stw_operational_aoi.gpkg` (reference only) |
-| Compute/tiling unit | **747** WFD water-body tiles (`data/processed/aoi_wb_tiles.gpkg`) |
+**The AOI files are not in the repository.** They are generated under `data/processed/`
+(gitignored) on the machine that runs the pipeline. Their one STW-specific input — the Severn
+Trent service-area boundary — is Severn Trent's own data and is not included here either.
 
-To run a **different** area, `scripts/run_area.py --boundary <file>` takes
-`--mode {union, as_is}` — `union` (default) rebuilds the water-body-union AOI for that boundary;
-`as_is` uses the supplied boundary directly. Tiling is per-water-body either way.
+**To rebuild the AOI, use `scripts/run_area.py`**, the same route as any other run:
+
+```bash
+python scripts/run_area.py --boundary <service_area_boundary> --name <name>
+```
+
+Supply the ST and HD clean-water and wastewater service areas as a single polygon file (several
+polygons in one layer is fine — they are dissolved). `run_area.py` builds the AOI with the same
+functions that produced the delivered one (`build_operational_aoi` and `build_waterbody_union_aoi`
+in `scripts/preprocess_aoi.py`), fetches the overlapping WFD catchments automatically, and writes
+`data/processed/<name>_aoi.gpkg` and `data/processed/<name>_wb_tiles.gpkg`. It then builds the two
+watercourse inputs that leaky barriers and bunds read — `data/processed/waterlines_local_100m_points.gpkg`
+and `waterlines_buffered_for_bunds.gpkg` — from the staged OS Open Zoomstack, over the water-body
+union. Those two sit at fixed paths, so run one area at a time.
+
+`--mode {union, as_is}` changes only the AOI geometry that is *recorded*: `union` (default) is the
+water-body union above; `as_is` is the boundary as supplied. **In both modes the run is tiled by,
+and its outputs cover, every whole water body that overlaps the boundary** — `as_is` does not clip
+the outputs to the boundary.
+
+The delivered run itself used the STW-specific scripts, so its files are named differently:
+`scripts/preprocess_aoi.py --boundaries-dir <folder with the four ST/HD shapefiles>` wrote
+`stw_operational_aoi.gpkg` and `stw_full_aoi.gpkg`, and `scripts/build_wb_tiles.py` wrote
+`aoi_wb_tiles.gpkg`.
 
 ## 3. The seven NbS layers
 
@@ -48,7 +68,8 @@ Six are ports of the Warwickshire Avon R model; peat restoration is new to the P
 
 ## 4. The three stages
 
-`opportunity` → `supplemented` → `prioritised`, written per layer to `outputs/<layer>/`.
+`opportunity` → `supplemented` → `prioritised`, written per layer to `outputs/<layer>/` when the
+pipeline runs.
 
 **Use `prioritised`.** It is the full result: opportunity areas with constraints removed,
 supplementary attributes joined, and `tot_prio` scored. The earlier two stages are retained for
@@ -118,9 +139,15 @@ use `n_prio_scores` to judge how well-evidenced a score is.
 
 ## 8. The delivered output set
 
-**`outputs/<layer>/<layer>_full_<stage>_20260730.gpkg`** — all seven layers, all three stages.
-This consolidated set supersedes every earlier dated set (`20260706`, `20260710`, `20260720`,
-`20260724`, `20260729`).
+**`<layer>_full_<stage>_20260730.gpkg`** — all seven layers, all three stages. This consolidated
+set supersedes every earlier dated set (`20260706`, `20260710`, `20260720`, `20260724`,
+`20260729`).
+
+**The GeoPackages are not in the repository** — `outputs/` is gitignored, and the full set is
+about 5 GB. A re-run writes an equivalent set to `outputs/<layer>/`, named after the `--name`
+given to `run_area.py` (`<layer>_<name>_<stage>_<date>.gpkg`). The remote source datasets are
+fetched fresh on each run, so a re-run reflects any updates their publishers have made since July
+2026 and its figures may differ slightly from those below.
 
 Prioritised stage, re-derived from the GeoPackages 2026-09-14:
 
@@ -150,4 +177,4 @@ sparsest. Areas overlap between layers; they are per-layer totals, not a partiti
 | How the pipeline works internally | `docs/methodology/06_pipeline_architecture.md` |
 | Adding a new NbS layer | `docs/HOWTO_add_nbs_layer.md` |
 | How the method evolved | `docs/briefs/` and the dated records in `docs/methodology/` |
-| The full client methodology | `docs/STW_NbS_Methodology_v0.7.docx` |
+| The full client methodology | `docs/STW_NbS_Methodology_v0.7.pdf` |

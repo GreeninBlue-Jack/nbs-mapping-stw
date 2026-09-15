@@ -29,11 +29,14 @@ python scripts/run_area.py --boundary path/to/my_area.gpkg --name my_area
 
 That's it. `run_area` will, with no further steps:
 1. build the **WFD water-body-union AOI** for your boundary (whole water bodies overlapping it —
-   the STW delivery unit; doc 09). Use `--mode as_is` to keep the raw boundary instead.
+   the STW delivery unit; doc 09). `--mode as_is` records the raw boundary as the AOI instead,
+   but it does **not** clip outputs to it — tiling and outputs are per whole water body in both modes.
 2. build the **per-WB tile index**,
-3. **fetch + compute** every tile (constraints → 7 NbS layers → supplementary → prioritisation,
+3. build the **waterlines inputs** for leaky barriers and bunds (Zoomstack → 100 m points and
+   type-keyed buffers, over the water-body union) — reused on a resume of the same area,
+4. **fetch + compute** every tile (constraints → 7 NbS layers → supplementary → prioritisation,
    `+250 m` halo, clipped to each exact water body), **resumable** — re-run to retry any failures,
-4. **merge** to `outputs/<nbs>/<nbs>_my_area_<stage>_<date>.gpkg`.
+5. **merge** to `outputs/<nbs>/<nbs>_my_area_<stage>_<date>.gpkg`.
 
 Useful flags: `--fetch-workers N` (default 4; lower to 2–3 if the EA server refuses under load),
 `--compute-workers N` (default 6; RAM-bound), `--limit N` (first N tiles, for a quick test),

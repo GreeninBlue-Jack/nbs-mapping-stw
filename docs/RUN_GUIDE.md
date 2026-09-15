@@ -5,8 +5,9 @@
 
 This guide is everything you need to run the tool and get outputs. You do **not** need to edit any Python. The only input you must supply is a boundary polygon for the area you want to map.
 
-> **This is the current, authoritative run guide.** Where it differs from the issued
-> `STW_NbS_Run_Guide.docx`, this document supersedes it.
+> **This is the current, authoritative run guide.** Where it differs from the Word run guide
+> issued to Severn Trent (`STW_NbS_Run_Guide.docx`, not included in this repository), this
+> document supersedes it.
 
 ---
 
@@ -65,7 +66,7 @@ runs and will re-fetch.
 python scripts/run_area.py --boundary path/to/your_area.gpkg --name your_area
 ```
 
-That single command does the whole chain with no further steps: builds the water-body AOI for your boundary, tiles it by WFD water body, fetches + computes every tile, and merges the results to:
+That single command does the whole chain with no further steps: builds the water-body AOI for your boundary, tiles it by WFD water body, builds the watercourse inputs that leaky barriers and bunds need (from the staged OS Open Zoomstack), fetches + computes every tile, and merges the results to:
 
 ```
 outputs/<layer>/<layer>_your_area_<stage>_<date>.gpkg
@@ -81,7 +82,7 @@ outputs/<layer>/<layer>_your_area_<stage>_<date>.gpkg
 | `--include-experimental` | Adds the peat restoration layer. |
 | `--limit N` | Only the first N tiles — use this to smoke-test before a full run. |
 | `--retries N` | Extra passes over any tiles that failed (the run is resumable). |
-| `--mode as_is` | Use your raw boundary instead of snapping to whole water bodies. |
+| `--mode as_is` | Records your raw boundary as the AOI instead of the water-body union. **It does not clip the outputs to your boundary** — they still cover every whole water body your boundary touches, exactly as in the default mode. |
 
 A live progress line shows `done/total | rate | ETA | running`, and a watchdog warns if any tile runs unusually long.
 
@@ -142,6 +143,7 @@ Neither corrupts anything — they're both "the re-run reused something it shoul
 
 - **Fetch stalls / connection errors (DNS, SSL, "connection refused").** The EA server is flaky, not your setup. Stop, check your connection is stable, and re-run with `--fetch-workers 2` (or `1`). The run resumes — no progress lost.
 - **A tile fails.** Failures are surfaced (not hidden) and retried automatically. Anything still failing after the run is listed; re-run with `--retries 2` to have another go.
+- **`missing` in the per-layer summary.** A tile couldn't find a locally-built input. `run_area.py` builds the waterlines inputs for leaky barriers and bunds before any tile runs, so this should only happen if those files were deleted, or rebuilt for a different area, part-way through. Re-run with `--force` to rebuild them and recompute.
 - **Run seems stuck.** Check the live progress line and the watchdog warnings. If a tile has been "running" far longer than the others, its log is under `%LOCALAPPDATA%\nbs-mapping\tiles\<tile>\`.
 - **Zero features where you expected some.** Confirm your boundary actually overlaps England (the data is England-only) and is a valid polygon.
 

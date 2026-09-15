@@ -3,11 +3,12 @@
 **Date:** 2026-06-11
 **Decision maker:** STW check-in (early June 2026)
 **Status (2026-09-14):** Current. The delivered full AOI is the WFD water-body union described
-here (`data/processed/stw_full_aoi.gpkg`), and it is the default. For re-running on a new area,
-`scripts/run_area.py` takes `--mode {union, as_is}` (default `union`): `union` rebuilds the
-water-body-union AOI for the supplied boundary as below; `as_is` uses the supplied boundary
-directly. Tiling is per-WB either way. §6's last row points at `CONTRIBUTING.md`, which carries
-the development conventions referred to there.
+here, and it is the default. The AOI file (`data/processed/stw_full_aoi.gpkg`) is generated
+locally and is not in the repository — doc 10 §2 explains how to rebuild it. For re-running on a
+new area, `scripts/run_area.py` takes `--mode {union, as_is}` (default `union`). The mode only
+changes the AOI geometry that is *recorded*: in both modes the run is tiled by, and its outputs
+cover, the whole water bodies that overlap the supplied boundary. §6's last row points at
+`CONTRIBUTING.md`, which carries the development conventions referred to there.
 **Affects:** `scripts/preprocess_aoi.py`; `src/pipeline/utils.py` docstring;
              `data/processed/stw_full_aoi.gpkg`; all downstream `--aoi full` runs.
 

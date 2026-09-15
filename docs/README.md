@@ -18,8 +18,11 @@ for what the delivered model *is*, then [`RUN_GUIDE.md`](RUN_GUIDE.md) to run it
 
 | Document | What it covers |
 |---|---|
-| `STW_NbS_Methodology_v0.7.docx` / `.pdf` | The full client methodology report — the authoritative written methodology. |
-| `STW_NbS_Run_Guide.docx` | The issued client run guide. **Superseded by [`RUN_GUIDE.md`](RUN_GUIDE.md)** where the two differ. |
+| [`STW_NbS_Methodology_v0.7.pdf`](STW_NbS_Methodology_v0.7.pdf) | The full client methodology report — the authoritative written methodology. |
+
+The editable Word version of the methodology and the Word run guide issued to Severn Trent
+(`STW_NbS_Run_Guide.docx`) are not in the repository. Where that run guide differs from
+[`RUN_GUIDE.md`](RUN_GUIDE.md), `RUN_GUIDE.md` supersedes it.
 
 ## Methodology — the numbered decision records
 

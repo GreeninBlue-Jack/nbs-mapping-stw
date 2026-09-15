@@ -105,4 +105,5 @@ The `OS MasterMap Water Network (PSGA)` entry carries a `phase: "1.5"` tag (new 
 
 - **Done** — `scripts/preprocess_waterlines_points.py` implemented (Shapely interpolate, AOI-clipped); writes `data/processed/waterlines_local_100m_points.gpkg` (feeds leaky barriers).
 - **Done** — `scripts/preprocess_waterlines_buffered.py` implemented (type-keyed buffer dict); writes `data/processed/waterlines_buffered_for_bunds.gpkg` (feeds bunds).
+- **Automated (2026-09-15)** — `scripts/run_area.py` now runs both scripts itself, over each area's water-body union, so they are no longer a manual step before a run.
 - **Not activated** — Phase 1.5 MasterMap activation was not pursued. OS Open Zoomstack is the delivered waterlines input for both roles; `OS MasterMap Water Network (PSGA)` remains a registered but unactivated `phase: "1.5"` entry (Phase-1 fidelity to the Avon model is achievable from Zoomstack alone).

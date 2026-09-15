@@ -8,6 +8,8 @@
 ---
 
 > **AOI — merged STW Plc operational footprint:** The canonical project AOI is the union of all four STW Plc service-area boundaries (ST Clean Water, ST Wastewater, HD Clean Water, HD Wastewater), stored as a single MultiPolygon at `data/processed/stw_full_aoi.gpkg`. Earlier point-test results that flagged Welshpool, Newtown, and Llanidloes as "outside the AOI" were run against `ST_Clean_Water_Service_Area.shp` alone and have been superseded — those towns fall within Hafren Dyfrdwy's (HD) service area and are therefore inside the merged AOI.
+>
+> **Superseded (2026-06-11):** the full AOI is now the union of the WFD water-body catchments that overlap this merged boundary (doc 09), not the boundary itself. Because the WFD dataset is England-only, the delivered AOI excludes the Welsh (HD) portion, including the towns named above. The AOI file is generated locally and is not in the repository — see doc 10 §2.
 
 ---
 
@@ -263,7 +265,8 @@ These were the open actions as at the audit date. None remains outstanding; each
 below with how it closed. `src/datasets.py` is the current registry.
 
 1. **Phase 2 prerequisite — AOI boundary.** *Closed 2026-06-11.* The full AOI is the WFD
-   water-body union (`data/processed/stw_full_aoi.gpkg`, 25,508 km²) — see doc 09.
+   water-body union (25,508 km²) — see doc 09. The AOI file is generated locally and is not in
+   the repository; doc 10 §2 explains how to rebuild it.
 2. **Manual download queue.** *Closed 2026-06-02/04.* All staged under `data/raw/`. A Phase 1
    run needs three by-hand datasets — OS Open Zoomstack, CEH Land Cover Map 2023 and BGS Soil
    Parent Material. ALC is no longer a manual download: it fetches automatically, and moved to

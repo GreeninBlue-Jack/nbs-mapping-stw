@@ -8,7 +8,10 @@ coverage was assessed but not implemented** and is out of scope for this deliver
 sections below are retained as the Phase-1 assessment, not as delivered or planned work. The
 dataset lists and coverage figures are a **2026-05 snapshot** — access routes and some products
 have changed since (e.g. ALC is now the national **Provisional** product, RoFSW is NaFRA2
-1-in-100). See `src/datasets.py` for the current registry and doc 10 for the delivered configuration.
+1-in-100). **The AOI described below was also superseded**, on 2026-06-11: it was the merged ST +
+HD service areas (24,321 km², Wales included), whereas the delivered AOI is the WFD water-body
+union (doc 09) — England-only by construction, 25,508 km². The AOI file is generated locally and
+is not in the repository. See `src/datasets.py` for the current registry and doc 10 for the delivered configuration.
 
 ---
 
